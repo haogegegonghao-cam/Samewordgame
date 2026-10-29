@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   verify-and-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
@@ -39,7 +39,7 @@ jobs:
           path: dist
   deploy:
     needs: verify-and-build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
