@@ -25,14 +25,15 @@ PGlite 测试使用单实例的串行事务队列，`Promise.all` 验证交错�
 
 浏览器报告：[docs/e2e-report.json](docs/e2e-report.json)。外观截图：[首页](docs/home-desktop.png)、[手机胜利页](docs/win-mobile.png)。
 
-## 云端部署进度
+## 真实云端验收：已通过
 
-- Supabase Free 组织已确认，项目 `spxiuccpoitidojzchep` 状态 ACTIVE_HEALTHY，生产数据库迁移执行成功。
-- 生产权限检查确认：authenticated 可以读取成员房间，不能直接 UPDATE 房间，不能 USAGE 私有 schema，不能 SELECT 私有猜词表；两个表均已开启 RLS，Realtime publication 仅包含 `public.game_rooms`。
-- 源码已发布到 GitHub `main`，GitHub Pages 发布源已配置为 GitHub Actions，公开客户端参数已写入 `src/public-config.json`。
-- **GitHub Pages 部署成功**：[打开游戏](https://haogegegonghao-cam.github.io/Samewordgame/)。[成功部署记录](https://github.com/haogegegonghao-cam/Samewordgame/actions/runs/40899106598)。
-- **GitHub Linux 完整回归通过**：[浏览器与数据库测试记录](https://github.com/haogegegonghao-cam/Samewordgame/actions/runs/40899295478)。首次使用 ubuntu-latest 时 Playwright 不支持新的 Ubuntu 26.04；已固定到受支持的 Ubuntu 24.04，重新执行通过。
-- **唯一待启用项**：Supabase 的 `Allow anonymous sign-ins` 仍处于关闭状态。需在 [控制台](https://supabase.com/dashboard/project/spxiuccpoitidojzchep/auth/providers) 完成登录后开启并保存。
-- **网页已发布，但真实云端联机尚不能使用／尚未验收**，不得把本地与 CI 的通过结果说成云端端到端通过。匿名登录开启后，执行 `pnpm test:cloud` 和 `E2E_URL=https://haogegegonghao-cam.github.io/Samewordgame/ pnpm test:e2e`。
+- Supabase Free 组织已确认，项目 `spxiuccpoitidojzchep` 健康，生产迁移执行成功；匿名登录已开启。
+- **正式网址**：[同词相遇](https://haogegegonghao-cam.github.io/Samewordgame/)。[成功部署记录](https://github.com/haogegegonghao-cam/Samewordgame/actions/runs/40899892077)。
+- **正式网址的 11 项独立浏览器流程检查全部通过**：不是本地适配器，真实访问 GitHub Pages 与 Supabase Cloud，包括四轮相遇、刷新／断网恢复、重开、离开、第三会话拒绝加入、邀请码和邀请链接。桌面 1440 × 1000，手机 390 × 844；胜利页另检查 320 / 360 / 768 像素。[云端浏览器报告](docs/cloud-browser-report.json)。
+- **真实 Auth / RPC / Realtime / RLS 安全冒烟测试通过**：三个独立匿名身份；两个房间成员各收到 12 条实时更新事件，第三身份收到 0 条。揭晓前 RPC 快照、直接可读表和实时事件均不含秘密词；私有表读取和直接房间修改拒绝；并发提交、双方推进、精确匹配、共同重开与关闭均通过。[云端 API 报告](docs/cloud-api-report.json)。
+- 云端权限再次确认：authenticated 可以读取成员房间，不能直接 UPDATE 房间，不能 USAGE 私有 schema，不能 SELECT 私有猜词表。两表 RLS 均启用；Realtime publication 只有 `public.game_rooms`。
+- **GitHub Linux 完整回归通过**：[浏览器与数据库测试记录](https://github.com/haogegegonghao-cam/Samewordgame/actions/runs/40899295478)。已固定 Ubuntu 24.04，以匹配锁定的 Playwright 版本。
 
-Supabase 顾问报告的“私有表无 RLS policy”及“已认证可执行 SECURITY DEFINER RPC”均符合本项目权限设计，已逐项核对；详见 README 的安全说明。
+首次正式网页验收中，一次刷新收到 GitHub 临时 5xx 错误页，游戏重开本身已成功。待发布稳定后重新完整验收通过；测试脚本对托管端 5xx 的刷新提供最多 3 次有界重试。最终通过的流程未记录 5xx 重试。前端无法控制托管平台自身的临时错误。
+
+Supabase 顾问报告的“私有表无 RLS policy”及“已认证可执行 SECURITY DEFINER RPC”均符合本项目权限设计，已逐项核对；详见 README 的安全说明。验收使用自动化的隔离浏览器会话与手机视口模拟，不声称已经在两台实体手机上手工测试。

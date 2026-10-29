@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-29",
+  "passed": true,
+  "backend": "https://spxiuccpoitidojzchep.supabase.co",
+  "auth": "3 isolated Supabase anonymous users",
+  "realtimeMemberEvents": {
+    "a": 12,
+    "b": 12
+  },
+  "outsiderEvents": 0,
+  "checks": [
+    "Auth",
+    "RPC",
+    "RLS read/write",
+    "private table denial",
+    "secret Realtime payload denial",
+    "live member events",
+    "outsider subscription denial",
+    "concurrent submits",
+    "reveal",
+    "advance",
+    "exact win",
+    "mutual rematch",
+    "close"
+  ]
+}

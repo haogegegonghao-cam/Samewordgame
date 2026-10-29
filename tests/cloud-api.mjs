@@ -8,7 +8,7 @@ const url=process.env.VITE_SUPABASE_URL||config.url;
 const key=process.env.VITE_SUPABASE_PUBLISHABLE_KEY||config.publishableKey;
 const clients=Array.from({length:3},()=>createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}));
 const [a,b,c]=clients;
-const call=async(client,name,args={})=>{const r=await client.rpc(`game_${name}`,args).abortSignal(AbortSignal.timeout(12000));if(r.error)throw r.error;return r.data;};
+const call=async(client,name,args={})=>{const r=await client.rpc(`game_${name}`,args).abortSignal(AbortSignal.timeout(12000));if(r.error)throw new Error(r.error.message,{cause:r.error});return r.data;};
 let room,channels=[];
 try{
   for(const client of clients){const {error}=await client.auth.signInAnonymously();if(error)throw error;}

@@ -6,16 +6,16 @@
 
 前端：原生 JavaScript + CSS + Vite。后端：Supabase Auth / PostgreSQL / Realtime。托管：GitHub Pages。无需自建服务器，无需付费云函数。
 
-> 本仓库已配置同词相遇的 Supabase 项目，数据库迁移已执行。`src/public-config.json` 仅含可公开的 Project URL 与 publishable key，没有管理员密钥。**本次启用只需开启匿名登录，并将 GitHub Pages 发布源设为 GitHub Actions。** 部署与真实云端验收状态见 [VERIFICATION.md](VERIFICATION.md)。
+> 本仓库已配置同词相遇的 Supabase 项目，数据库迁移已执行。`src/public-config.json` 仅含可公开的 Project URL 与 publishable key，没有管理员密钥。**生产部署、匿名登录和真实云端双会话验收均已完成，可以直接分享游戏网址。** 详细证据见 [VERIFICATION.md](VERIFICATION.md)。
 
 ![游戏首页](docs/home-desktop.png)
 
 ## 启用本次已配置的仓库
 
-网页已发布：[同词相遇](https://haogegegonghao-cam.github.io/Samewordgame/)。数据库、Pages 和 CI 已配置，当前仅剩第 1 项匿名登录开关待开启。
+网页已上线：[同词相遇](https://haogegegonghao-cam.github.io/Samewordgame/)。数据库、匿名登录、Pages 与 CI 均已配置，**本次交付无需再做控制台操作**。下面列出配置位置，供后续维护。
 
-1. 打开 [Supabase 匿名登录设置](https://supabase.com/dashboard/project/spxiuccpoitidojzchep/auth/providers)，开启 **Allow anonymous sign-ins** 并保存。数据库已部署，**不要再次执行 schema.sql**。
-2. 打开 [GitHub Pages 设置](https://github.com/haogegegonghao-cam/Samewordgame/settings/pages)，将 **Source** 设为 **GitHub Actions**。
+1. [Supabase 匿名登录设置](https://supabase.com/dashboard/project/spxiuccpoitidojzchep/auth/providers)：**Allow anonymous sign-ins** 已启用。数据库已部署，**不要再次执行 schema.sql**。
+2. [GitHub Pages 设置](https://github.com/haogegegonghao-cam/Samewordgame/settings/pages)：**Source = GitHub Actions** 已保存。
 3. 打开仓库 **Actions** 运行部署工作流。公开配置已写入 `src/public-config.json`，本次无需手填 Actions Variables。自定义环境变量可覆盖该文件。
 
 如果你要复制工程、切换账户或创建自己的独立后端，才需要下面的完整流程。

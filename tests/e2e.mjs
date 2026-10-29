@@ -10,6 +10,15 @@ const errors=[];[a,b,c].forEach(p=>p.on('pageerror',e=>errors.push(e.message)));
 const checks=[];
 async function checked(name,task){await task();checks.push(name);console.log(`PASS ${name}`);}
 async function waitText(page,text){await page.getByText(text,{exact:false}).first().waitFor({timeout:18000});}
+async function safeReload(page){
+  for(let attempt=0;attempt<3;attempt++) {
+    const response=await page.reload();
+    if(!response || response.status()<500) return;
+    console.log(`Hosting returned HTTP ${response.status()} on reload; retry ${attempt+1}/3`);
+    await page.waitForTimeout(700*(attempt+1));
+  }
+  throw new Error('Hosting kept returning HTTP 5xx on reload');
+}
 async function submit(page,word){await page.locator('#word-input').fill(word);await page.locator('#word-form').press('Enter');}
 await mkdir('test-results',{recursive:true});
 try{
@@ -42,9 +51,9 @@ try{
     assert.ok(!(await b.locator('body').innerText()).includes('海洋'));
     // Inspect the real HTTP response used by B, never a front-end-only assertion.
     const responsePromise=b.waitForResponse(r=>r.url().includes('/rpc/game_sync'));
-    await b.reload();const response=await responsePromise;
+    await safeReload(b);const response=await responsePromise;
     assert.ok(!(await response.text()).includes('海洋'));
-    await a.reload();await waitText(a,'你的词，已经轻轻放好了。');
+    await safeReload(a);await waitText(a,'你的词，已经轻轻放好了。');
     assert.equal(await a.locator('#word-input').count(),0);
   });
   await checked('双方提交后揭晓，双方确认后只推进一轮',async()=>{
@@ -90,7 +99,7 @@ try{
     await a.getByRole('button',{name:'再来一场相遇'}).click();await waitText(a,'等对方点头，再来一局');
     await b.getByRole('button',{name:'再来一场相遇'}).click();await a.locator('#word-input').waitFor();await b.locator('#word-input').waitFor();
     assert.equal(await a.locator('.round-number').innerText(),'01');assert.equal(await a.locator('.history-list').count(),0);
-    await b.reload();await b.locator('#word-input').waitFor();assert.equal(await b.locator('.round-number').innerText(),'01');
+    await safeReload(b);await b.locator('#word-input').waitFor();assert.equal(await b.locator('.round-number').innerText(),'01');
   });
   await checked('弹窗不会被后台同步关闭，明确离开关闭双方房间',async()=>{
     await b.getByRole('button',{name:/离开房间/}).click();await b.waitForTimeout(4500);
