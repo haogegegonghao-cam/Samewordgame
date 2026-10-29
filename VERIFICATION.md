@@ -25,10 +25,12 @@ PGlite 测试使用单实例的串行事务队列，`Promise.all` 验证交错�
 
 浏览器报告：[docs/e2e-report.json](docs/e2e-report.json)。外观截图：[首页](docs/home-desktop.png)、[手机胜利页](docs/win-mobile.png)。
 
-## 云端待完成
+## 云端部署进度
 
-- 需要 Supabase 项目、匿名登录开启、执行 schema、Project URL 与 publishable/anon 公钥。
-- 需要 GitHub 仓库配置两个 Actions Variables、Pages 选择 GitHub Actions，并运行部署工作流。
+- 已创建 Supabase 项目 `spxiuccpoitidojzchep`，状态 ACTIVE_HEALTHY，生产迁移执行成功；公开客户端参数已配置。匿名登录仍需在控制台开启。
+- 源码已发布到 GitHub 仓库 `main`；Pages 发布源已设置为 GitHub Actions。公开参数已写入源码，本次无需 Actions Variables；等待新构建发布。
 - 需要在部署成功返回的实际 URL 上，再完成两个独立公网设备／会话的云端验收。可用 `E2E_URL=实际网址 pnpm test:e2e` 辅助。
 
 仓库发布和部署状态以最终交付消息与 GitHub Actions 实际结果为准。没有真实部署结果时，不应把预计的 Pages 地址当作已上线网址。
+
+云端权限检查确认：authenticated 可以读取成员房间，不能直接 UPDATE 房间，不能 USAGE 私有 schema，不能 SELECT 私有猜词表。Supabase 顾问报告的“私有表无 RLS policy”及“已认证可执行 SECURITY DEFINER RPC”均符合本项目权限设计，已逐项核对。

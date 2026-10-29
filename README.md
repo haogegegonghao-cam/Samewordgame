@@ -6,11 +6,19 @@
 
 前端：原生 JavaScript + CSS + Vite。后端：Supabase Auth / PostgreSQL / Realtime。托管：GitHub Pages。无需自建服务器，无需付费云函数。
 
-> 当前交付包含完整源码、数据库迁移、安全规则、自动部署及真实 SQL / 双浏览器测试。**未提供 Supabase 项目配置时，生产联机尚不能启用。** 本地测试使用真正的 PostgreSQL（PGlite）及测试专用 HTTP 适配器，并不意味着 Supabase Cloud 或 GitHub Pages 已通过验收。实际交付状态见 [VERIFICATION.md](VERIFICATION.md)。
+> 本仓库已配置同词相遇的 Supabase 项目，数据库迁移已执行。`src/public-config.json` 仅含可公开的 Project URL 与 publishable key，没有管理员密钥。**本次启用只需开启匿名登录，并将 GitHub Pages 发布源设为 GitHub Actions。** 部署与真实云端验收状态见 [VERIFICATION.md](VERIFICATION.md)。
 
 ![游戏首页](docs/home-desktop.png)
 
-## 先完成这 3 件事，获得可分享的网址
+## 启用本次已配置的仓库
+
+1. 打开 [Supabase 匿名登录设置](https://supabase.com/dashboard/project/spxiuccpoitidojzchep/auth/providers)，开启 **Allow anonymous sign-ins** 并保存。数据库已部署，**不要再次执行 schema.sql**。
+2. 打开 [GitHub Pages 设置](https://github.com/haogegegonghao-cam/Samewordgame/settings/pages)，将 **Source** 设为 **GitHub Actions**。
+3. 打开仓库 **Actions** 运行部署工作流。公开配置已写入 `src/public-config.json`，本次无需手填 Actions Variables。自定义环境变量可覆盖该文件。
+
+如果你要复制工程、切换账户或创建自己的独立后端，才需要下面的完整流程。
+
+## 从空项目重新部署
 
 ### 1. 创建免费的 Supabase 项目
 
@@ -39,7 +47,7 @@
 
 3. **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。GitHub Free 使用公开仓库；私有仓库的 Pages 可用性取决于 GitHub 计划。
 4. 在 **Actions → Deploy 同词相遇 to GitHub Pages → Run workflow** 选择 `main`。之后每次推送 `main` 都会自动测试、构建并部署。
-5. 配置缺失或检测到管理员密钥时，工作流会主动失败并解释原因，不会发布一个假装能联机的版本。
+5. 默认公开配置与环境变量均缺失，或检测到管理员密钥时，工作流会主动失败并解释原因，不会发布一个假装能联机的版本。
 6. 成功后 Pages 显示实际地址，预计为 `https://haogegegonghao-cam.github.io/Samewordgame/`，**以成功部署输出的 `page_url` 为准**。
 
 说明：[GitHub Pages 自定义工作流](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。本项目资源路径为相对路径，兼容仓库子目录，不需要路由重写。
@@ -123,6 +131,10 @@ won ──双方确认再来──> thinking（新一局、第 1 轮）
 - 实时订阅触发权威快照同步；每 4 秒轮询兜底，20 秒心跳，约 55 秒后显示对方离线。后台标签页暂停轮询；返回前台立即同步。失败提交不会用前端乐观状态伪造成功。
 - 所有用户词语都 HTML 转义，分享卡用 Canvas 文本渲染，防止插入 HTML。
 
+完成云端配置后，可额外运行 `pnpm test:cloud`：它会以三个真实匿名身份验证 Supabase Auth、Realtime 双人事件、第三人订阅隔离、秘密词不出现在实时消息、并发提交、推进、胜利与重开。它不会使用管理员权限，结束后关闭测试房间。
+
+Supabase 安全顾问可能提示私有提交表没有 RLS policy，以及已认证用户可以调用 SECURITY DEFINER RPC。这两项是本架构的刻意设计：私有表完全禁止客户端访问，公开 RPC 则逐次校验身份、成员和状态。不要为了清除提示而给私有表添加开放读取策略。说明：[无策略的 RLS](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy)、[可调用的 SECURITY DEFINER](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)。
+
 ## 免费套餐与日常维护
 
 Supabase [Free 计划](https://supabase.com/pricing)当前有数据库、认证和 Realtime 免费额度；闲置项目可能在一周不活跃后暂停，需要到控制台恢复。额度、地域可达性和服务状态以官方为准，不能保证永久免费可用或零延迟。
@@ -146,6 +158,7 @@ Supabase [Free 计划](https://supabase.com/pricing)当前有数据库、认证�
 src/main.js               页面、交互、状态恢复、声音、结果卡片
 src/style.css            中文排版、响应式布局、轨道与相遇动画
 src/api.js               匿名 Auth、RPC、Realtime、错误映射
+src/public-config.json   本次部署的可公开后端参数（可被环境变量覆盖）
 src/words.js             Unicode/空白规则与 HTML 转义
 supabase/schema.sql      数据表、RLS、私有提交、原子状态机、权限
 supabase/maintenance.sql  可选清理
@@ -155,6 +168,7 @@ scripts/check-config.mjs  部署配置与公钥校验
  tests/game.test.mjs      安全与状态机测试
  tests/local-server.mjs   仅用于本地验证的 Supabase 兼容 HTTP 适配器
  tests/e2e.mjs            三个隔离会话、手机布局、重连、全流程验收
+ tests/cloud-api.mjs      真实 Supabase Auth / Realtime / 权限冒烟测试
 ```
 
 MIT License.
