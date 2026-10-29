@@ -12,6 +12,8 @@
 
 ## 启用本次已配置的仓库
 
+网页已发布：[同词相遇](https://haogegegonghao-cam.github.io/Samewordgame/)。数据库、Pages 和 CI 已配置，当前仅剩第 1 项匿名登录开关待开启。
+
 1. 打开 [Supabase 匿名登录设置](https://supabase.com/dashboard/project/spxiuccpoitidojzchep/auth/providers)，开启 **Allow anonymous sign-ins** 并保存。数据库已部署，**不要再次执行 schema.sql**。
 2. 打开 [GitHub Pages 设置](https://github.com/haogegegonghao-cam/Samewordgame/settings/pages)，将 **Source** 设为 **GitHub Actions**。
 3. 打开仓库 **Actions** 运行部署工作流。公开配置已写入 `src/public-config.json`，本次无需手填 Actions Variables。自定义环境变量可覆盖该文件。

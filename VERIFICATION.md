@@ -27,10 +27,12 @@ PGlite 测试使用单实例的串行事务队列，`Promise.all` 验证交错�
 
 ## 云端部署进度
 
-- 已创建 Supabase 项目 `spxiuccpoitidojzchep`，状态 ACTIVE_HEALTHY，生产迁移执行成功；公开客户端参数已配置。匿名登录仍需在控制台开启。
-- 源码已发布到 GitHub 仓库 `main`；Pages 发布源已设置为 GitHub Actions。公开参数已写入源码，本次无需 Actions Variables；等待新构建发布。
-- 需要在部署成功返回的实际 URL 上，再完成两个独立公网设备／会话的云端验收。可用 `E2E_URL=实际网址 pnpm test:e2e` 辅助。
+- Supabase Free 组织已确认，项目 `spxiuccpoitidojzchep` 状态 ACTIVE_HEALTHY，生产数据库迁移执行成功。
+- 生产权限检查确认：authenticated 可以读取成员房间，不能直接 UPDATE 房间，不能 USAGE 私有 schema，不能 SELECT 私有猜词表；两个表均已开启 RLS，Realtime publication 仅包含 `public.game_rooms`。
+- 源码已发布到 GitHub `main`，GitHub Pages 发布源已配置为 GitHub Actions，公开客户端参数已写入 `src/public-config.json`。
+- **GitHub Pages 部署成功**：[打开游戏](https://haogegegonghao-cam.github.io/Samewordgame/)。[成功部署记录](https://github.com/haogegegonghao-cam/Samewordgame/actions/runs/40899106598)。
+- **GitHub Linux 完整回归通过**：[浏览器与数据库测试记录](https://github.com/haogegegonghao-cam/Samewordgame/actions/runs/40899295478)。首次使用 ubuntu-latest 时 Playwright 不支持新的 Ubuntu 26.04；已固定到受支持的 Ubuntu 24.04，重新执行通过。
+- **唯一待启用项**：Supabase 的 `Allow anonymous sign-ins` 仍处于关闭状态。需在 [控制台](https://supabase.com/dashboard/project/spxiuccpoitidojzchep/auth/providers) 完成登录后开启并保存。
+- **网页已发布，但真实云端联机尚不能使用／尚未验收**，不得把本地与 CI 的通过结果说成云端端到端通过。匿名登录开启后，执行 `pnpm test:cloud` 和 `E2E_URL=https://haogegegonghao-cam.github.io/Samewordgame/ pnpm test:e2e`。
 
-仓库发布和部署状态以最终交付消息与 GitHub Actions 实际结果为准。没有真实部署结果时，不应把预计的 Pages 地址当作已上线网址。
-
-云端权限检查确认：authenticated 可以读取成员房间，不能直接 UPDATE 房间，不能 USAGE 私有 schema，不能 SELECT 私有猜词表。Supabase 顾问报告的“私有表无 RLS policy”及“已认证可执行 SECURITY DEFINER RPC”均符合本项目权限设计，已逐项核对。
+Supabase 顾问报告的“私有表无 RLS policy”及“已认证可执行 SECURITY DEFINER RPC”均符合本项目权限设计，已逐项核对；详见 README 的安全说明。
